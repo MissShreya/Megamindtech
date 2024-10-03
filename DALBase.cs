@@ -82,6 +82,28 @@ namespace MEGAMINDTECH
 
 
     }
+    public class B_clsUtility
+    {
+        public static List<Dictionary<string, object>> GetJsonFromTable(DataTable tmpDT)
+        {
+            List<Dictionary<string, object>> _Json = new List<Dictionary<string, object>>();
+            if (tmpDT.Rows.Count > 0)
+            {
+                Dictionary<string, object> dictRow = null;
+                foreach (DataRow dr in tmpDT.Rows)
+                {
+                    dictRow = new Dictionary<string, object>();
+                    foreach (DataColumn col in tmpDT.Columns)
+                    {
+                        dictRow.Add(col.ColumnName, dr[col]);
+                    }
+                    _Json.Add(dictRow);
+                }
+            }
+            return _Json;
+        }
+
+    }
 
 
 
