@@ -61,16 +61,157 @@
         const termsCheckbox = $('#' + _agree); // Get the checkbox element
         submitBtn.prop('disabled', !termsCheckbox.prop('checked'));
     }
-    function openEditUserModal() {
-        $('#UpdateUserModal').modal('show');
+    function OnSuccessAdd(result) {
+        if (result.ERROR == "OK") {
+            alert(result.MESSAGE);
+
+            $('#frmAdd')[0].reset();
+            $('#addUserModal').modal('hide');
+
+            GetRegisterData();
+        }
+        else {
+            alert(result.MESSAGE);
+            return false;
+        }
+    }
+
+    var STATEDATA = [];
+    function StateJson() {
+          $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetStateDetail", "MegaTask")',
+            datatype: 'json',
+            async: true,
+            data: '{}',
+              success: function (result) {
+                  if (result.ERROR == "OK") {
+                      if (result.COUNT != "0") {
+                          STATEDATA = result.RECORD;
+                          var _Statehtml = "";
+                          _Statehtml += "<option value=''>Select State</option>"
+                          for (var i = 0; i < STATEDATA.length; i++) {
+
+                              _Statehtml += "<option value='" + STATEDATA[i].StateID + "'>" + STATEDATA[i].StateName + "</option>";
+                          }
+                          $('#ddlState').html(_Statehtml);
+                          $('#ddlStateE').html(_Statehtml);
+                      }
+                  }
+              },
+              fail: function () {
+
+              }
+          });
+    };
+
+     var CITYDATA = [];
+     function CityJson() {
+           $.ajax({
+             type: "POST",
+             url: '@Url.Action("GetCityDetail", "MegaTask")',
+             datatype: 'json',
+             async: true,
+             data: '{}',
+               success: function (result) {
+                   if (result.ERROR == "OK") {
+                       if (result.COUNT != "0") {
+                           CITYDATA = result.RECORD;
+                       }
+                   }               },
+               fail: function () {
+
+               }
+           });
+     };
+
+    function GetCityAgainstState(_state,_city) {
+        var State = $('#' + _state).val();
+        if (State == "") {
+           alert('Please select state.')
+            return false;
+        }
+        var cityHtml = "<option value=''>Select City</option>";
+        for (var i = 0; i < CITYDATA.length; i++) {
+            if (CITYDATA[i].StateID == State) {
+                cityHtml += "<option value='" + CITYDATA[i].CityID + "'>" + CITYDATA[i].CityName +"</option>";
+            }
+        }
+        $('#' + _city).html(cityHtml);
+    }
+    function fn_EditDetail(intRegID) {
+        let recordFound = false;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].RegID == intRegID) {
+                $('#ddlStateE').val(data[i].StateID);
+
+                $('#hdRegID').val(data[i].RegID);
+                $('#strNameE').val(data[i].Name);
+                $('#strEmailE').val(data[i].Email);
+                $('#numNumberE').val(data[i].PhoneNumber);
+                $('#strAddressE').val(data[i].Address);
+                GetCityAgainstState('ddlStateE', 'ddlCityE');
+                $('#ddlCityE').val(data[i].CityID);
+                recordFound = true;
+                break;
+            }
+
+        }
+        if (!recordFound) {
+            alert("Record not found");
+        } else {
+            $('#UpdateUserModal').modal('show');
+        }
+    }
+
+    function OnSuccessUpdate(result) {
+        if (result.ERROR == "OK") {
+            alert(result.MESSAGE);
+            $('#frmUpdate')[0].reset();
+            $('#UpdateUserModal').modal('hide');
+            GetRegisterData();
+
+        }
+        else {
+            alert(result.MESSAGE);
+            return false;
+        }
+    }
+    function fn_DeleteDetail(_regID) {
+        if (_regID !== "") {
+            let isConfirmed = confirm('Are you sure you want to delete this record?');
+
+            if (isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteDetail", "MegaTask")',
+                    data: { regID: _regID },
+                    success: function (response) {
+                        if (response.ERROR === "OK") {
+                            alert("Record deleted successfully.");
+                            GetRegisterData();
+                        } else {
+                            alert("Failed to delete record. Please try again.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the record.");
+                    }
+                });
+            } else {
+                alert("Deletion canceled.");
+            }
+        }
     }
 
 </script>
+
 <style>
-    .form-label b{
-        color:red;
+    .form-label b {
+        color: red;
     }
 </style>
+
 <div class="container">
     <div class="row align-items-center mb-1">
         <div class="col">
@@ -78,7 +219,6 @@
         </div>
         <div class="col-auto">
             <button class="btn btn-primary btn-lg btn-add-user" onclick="openAddUserModal()">Add User</button>
-            <button class="btn btn-primary btn-lg btn-add-user" onclick="openEditUserModal()">Edit User</button>
         </div>
     </div>
 
@@ -102,7 +242,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -110,7 +249,13 @@
                 <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">X</button>
             </div>
-   
+            @using (Ajax.BeginForm("AddDetail", "MegaTask", null, new AjaxOptions
+            {
+                OnSuccess = "OnSuccessAdd",
+                OnFailure = "OnSuccessAdd",
+                LoadingElementId = "loading"
+            }, new { @class = "", @id = "frmAdd", @name = "frmAdd" }))
+            {
                 <div class="modal-body">
 
                     <div class="row mb-3">
@@ -135,7 +280,7 @@
 
                         <div class="col-md-6">
                             <label for="ddlState" class="form-label">State<b>*</b></label>
-                            <select class="form-control" id="ddlState" name="ddlState"  required>
+                            <select class="form-control" id="ddlState" name="ddlState" onchange="GetCityAgainstState('ddlState','ddlCity')" required>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -146,7 +291,7 @@
                     </div>
 
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" value="" id="agree" onchange="toggleSubmit('submitBtn','agree')" >
+                        <input class="form-check-input" type="checkbox" value="" id="agree" onchange="toggleSubmit('submitBtn','agree')">
                         <label class="form-check-label" for="agree">
                             Agree
                         </label>
@@ -158,7 +303,7 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" id="submitBtn" class="btn btn-primary" disabled>Register</button>
                 </div>
-            
+            }
         </div>
     </div>
 </div>
@@ -170,7 +315,13 @@
                 <h5 class="modal-title" id="UpdateUserModal">Update User Detail</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">X</button>
             </div>
-           
+            @using (Ajax.BeginForm("UpdateDetail", "MegaTask", null, new AjaxOptions
+            {
+                OnSuccess = "OnSuccessUpdate",
+                OnFailure = "OnSuccessUpdate",
+                LoadingElementId = "loading"
+            }, new { @class = "", @id = "frmUpdate", @name = "frmUpdate" }))
+            {
                 <div class="modal-body">
 
                     <div class="row mb-3">
@@ -196,7 +347,7 @@
 
                         <div class="col-md-6">
                             <label for="ddlState" class="form-label">State<b>*</b></label>
-                            <select class="form-control" id="ddlStateE" name="ddlStateE"  required>
+                            <select class="form-control" id="ddlStateE" name="ddlStateE" onchange="GetCityAgainstState('ddlStateE','ddlCityE')" required>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -222,7 +373,7 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" id="submitBtnE" class="btn btn-primary" disabled>Update</button>
                 </div>
-            
+            }
         </div>
     </div>
 </div>

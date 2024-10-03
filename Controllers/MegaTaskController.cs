@@ -121,6 +121,7 @@ namespace MEGAMINDTECH.Controllers
                 return Json(new { ERROR = _error, MESSAGE = ex.Message.Length > 25 ? ex.Message.Substring(0, 25) + "..." : ex.Message }, JsonRequestBehavior.DenyGet);
             }
         }
+
         [HttpPost]
         public ActionResult GetList()
         {
@@ -174,6 +175,168 @@ namespace MEGAMINDTECH.Controllers
                 }, JsonRequestBehavior.DenyGet);
             }
 
+        }
+
+        [HttpPost]
+        public JsonResult UpdateDetail(FormCollection frm)
+        {
+            string _error = "";
+            string _mess = "";
+
+            try
+            {
+
+                string hdRedID = Convert.ToString(frm["hdRegID"]);
+                string strName = Convert.ToString(frm["strNameE"]);
+                string strEmail = Convert.ToString(frm["strEmailE"]);
+                string numNumber = Convert.ToString(frm["numNumberE"]);
+                string strAddress = Convert.ToString(frm["strAddressE"]);
+                string ddlState = Convert.ToString(frm["ddlStateE"]);
+                string ddlCity = Convert.ToString(frm["ddlCityE"]);
+                if (string.IsNullOrEmpty(hdRedID))
+                {
+                    _error = "ERROR";
+                    _mess = "Invalid Data for update detail.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+                if (string.IsNullOrEmpty(strName))
+                {
+                    _error = "ERROR";
+                    _mess = "Please mention your name.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (string.IsNullOrEmpty(strEmail))
+                {
+                    _error = "ERROR";
+                    _mess = "Please mention your email.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                try
+                {
+                    var email = new MailAddress(strEmail);
+                }
+                catch (FormatException)
+                {
+                    _error = "ERROR";
+                    _mess = "Invalid email format.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (string.IsNullOrEmpty(numNumber))
+                {
+                    _error = "ERROR";
+                    _mess = "Please mention your phone number.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (numNumber.Length != 10)
+                {
+                    _error = "ERROR";
+                    _mess = "Invalid phone number.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (!Regex.IsMatch(numNumber, @"^\d+$"))
+                {
+                    _error = "ERROR";
+                    _mess = "Phone number must be numeric.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (string.IsNullOrEmpty(ddlState))
+                {
+                    _error = "ERROR";
+                    _mess = "Please mention your state.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                if (string.IsNullOrEmpty(ddlCity))
+                {
+                    _error = "ERROR";
+                    _mess = "Please mention your City.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+                string[] pName = { "@Mode", "@RegID", "@Name", "@Email", "@Phone", "@Address", "@StateID", "@CityID" };
+                string[] pValue = { "UPDATE", hdRedID, strName, strEmail, numNumber, strAddress, ddlState, ddlCity };
+                DataTable DT = new DALBase().ExecuteProcedure("sp_CRUDRegistration", pName, pValue).Tables[0];
+                if (DT.Rows.Count > 0)
+                {
+                    if (Convert.ToString(DT.Rows[0]["Code"]) == "0")
+                    {
+
+
+                        _error = "OK";
+                        _mess = Convert.ToString(DT.Rows[0]["Remark"]);
+                    }
+                    else
+                    {
+                        _error = "ERROR";
+                        _mess = Convert.ToString(DT.Rows[0]["Remark"]);
+                    }
+                }
+                else
+                {
+                    _error = "ERROR";
+                    _mess = "Some error occurred please try again later.";
+                }
+
+                return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { ERROR = _error, MESSAGE = ex.Message.Length > 25 ? ex.Message.Substring(0, 25) + "..." : ex.Message }, JsonRequestBehavior.DenyGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteDetail(string regID)
+        {
+            string _error = "";
+            string _mess = "";
+
+            try
+            {
+                if (string.IsNullOrEmpty(regID))
+                {
+                    _error = "ERROR";
+                    _mess = "Invalid Data for delete detail.";
+                    return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+                }
+
+                string[] pName = { "@Mode", "@RegID", "@Name", "@Email", "@Phone", "@Address", "@StateID", "@CityID" };
+                string[] pValue = { "DELETE", regID, "", "", "", "", "", "" };
+                DataTable DT = new DALBase().ExecuteProcedure("sp_CRUDRegistration", pName, pValue).Tables[0];
+                if (DT.Rows.Count > 0)
+                {
+                    if (Convert.ToString(DT.Rows[0]["Code"]) == "0")
+                    {
+
+
+                        _error = "OK";
+                        _mess = Convert.ToString(DT.Rows[0]["Remark"]);
+                    }
+                    else
+                    {
+                        _error = "ERROR";
+                        _mess = Convert.ToString(DT.Rows[0]["Remark"]);
+                    }
+                }
+                else
+                {
+                    _error = "ERROR";
+                    _mess = "Some error occurred please try again later.";
+                }
+
+                return Json(new { ERROR = _error, MESSAGE = _mess }, JsonRequestBehavior.DenyGet);
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { ERROR = _error, MESSAGE = ex.Message.Length > 25 ? ex.Message.Substring(0, 25) + "..." : ex.Message }, JsonRequestBehavior.DenyGet);
+            }
         }
 
         [HttpPost]
