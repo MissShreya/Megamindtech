@@ -13,6 +13,9 @@
         const termsCheckbox = $('#' + _agree); // Get the checkbox element
         submitBtn.prop('disabled', !termsCheckbox.prop('checked'));
     }
+    function openEditUserModal() {
+        $('#UpdateUserModal').modal('show');
+    }
 
 </script>
 <style>
@@ -27,6 +30,7 @@
         </div>
         <div class="col-auto">
             <button class="btn btn-primary btn-lg btn-add-user" onclick="openAddUserModal()">Add User</button>
+            <button class="btn btn-primary btn-lg btn-add-user" onclick="openEditUserModal()">Edit User</button>
         </div>
     </div>
 
@@ -111,3 +115,66 @@
     </div>
 </div>
 
+<div class="modal fade" id="UpdateUserModal" tabindex="-1" aria-labelledby="UpdateUserModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UpdateUserModal">Update User Detail</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">X</button>
+            </div>
+           
+                <div class="modal-body">
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="strName" class="form-label">Full Name<b>*</b></label>
+                            <input type="hidden" id="hdRegID" name="hdRegID" />
+                            <input type="text" class="form-control" id="strNameE" name="strNameE" placeholder="Enter your full name" required>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <label for="strEmail" class="form-label">Email<b>*</b></label>
+                            <input type="email" class="form-control" id="strEmailE" name="strEmailE" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="numNumber" class="form-label">Mobile<b>*</b></label>
+                            <input type="number" class="form-control" id="numNumberE" name="numNumberE" placeholder="Enter your Phone Number" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="strAddress" class="form-label">Address</label>
+                            <textarea class="form-control" id="strAddressE" name="strAddressE" placeholder="Enter your address"></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="ddlState" class="form-label">State<b>*</b></label>
+                            <select class="form-control" id="ddlStateE" name="ddlStateE"  required>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ddlCity" class="form-label">City<b>*</b></label>
+                            <select class="form-control" id="ddlCityE" name="ddlCityE" required>
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="" id="agreeE" onchange="toggleSubmit('submitBtnE','agreeE')">
+                        <label class="form-check-label" for="agreeE">
+                            Agree
+                        </label>
+                    </div>
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" id="submitBtnE" class="btn btn-primary" disabled>Update</button>
+                </div>
+            
+        </div>
+    </div>
+</div>
