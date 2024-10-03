@@ -121,12 +121,21 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MegaTaskController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Asset\bootstrap\css\bootstrap.min.css" />
+    <Content Include="Asset\bootstrap\js\bootstrap.bundle.min.js" />
+    <Content Include="Asset\img\confirm.png" />
+    <Content Include="Asset\img\error.png" />
+    <Content Include="Asset\js\jquery-ui.min.js" />
+    <Content Include="Asset\js\jquery.min.js" />
+    <Content Include="Asset\js\jquery.unobtrusive-ajax.js" />
+    <Content Include="Asset\js\script.js" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -173,13 +182,15 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_MegaLayout.cshtml" />
+    <Content Include="Views\MegaTask\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Asset\css\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
