@@ -5,6 +5,54 @@
 }
 
 <script>
+    $(document).ready(function () {
+        GetRegisterData();
+        StateJson();
+        CityJson();
+    });
+    var data = [];
+    function GetRegisterData() {
+      $.ajax({
+        type: "POST",
+        url: '@Url.Action("GetList", "MegaTask")',
+        datatype: 'json',
+        async: true,
+        data: '{}',
+          success: function (result) {
+              var _html = "";
+
+              if (result.ERROR == "OK") {
+
+                  if (result.COUNT != "0") {
+
+                      data = result.RECORD;
+                      for (var i = 0; i < data.length; i++) {
+                          _html += "<tr>";
+                          _html += "<td>" + data[i].Name + "</td>";
+                          _html += "<td>" + data[i].Email + "</td>";
+                          _html += "<td>" + data[i].PhoneNumber + "</td>";
+                          _html += "<td>" + data[i].Address + "</td>";
+                          _html += "<td>" + data[i].StateName + "</td>";
+                          _html += "<td>" + data[i].CityName + "</td>";
+                          _html += "<td><button class='btn btn-success' onclick='fn_EditDetail(" + data[i].RegID + ")'>EDIT</button><button class='btn btn-warning' onclick='fn_DeleteDetail(" + data[i].RegID + ")'>DELETE</button></td>";
+                          _html += "</tr>";
+
+                      }
+                  }
+                  else {
+                      _html += "<tr>";
+                      _html += "<td colspan='7' style='color:red;text-align:center'>RECORD NOT FOUND</td>";
+                      _html += "<tr>";
+                  }
+                  $('#tblRegisterData').html(_html);
+
+              }
+          },
+          fail: function () {
+
+          }
+      });
+};
     function openAddUserModal() {
         $('#addUserModal').modal('show');
     }
